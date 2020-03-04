@@ -1,41 +1,27 @@
 <template>
-  <b-row v-if="allPosts" class="justify-center">
-    <b-card
-      :title="post.title"
-      img-src="https://picsum.photos/600/300/?image=25"
-      img-alt="Image"
-      img-top
-      tag="article"
-      style="max-width: 20rem;"
-      class="m-2"
-      v-for="post in allPosts"
-      :id="'post' + post.id"
-      :key="'post' + post.id"
-    >
-      <b-card-text>
-        {{ post.body }}
-      </b-card-text>
-
-      <b-button href="#" :to="{name:'post', params: {id:post.id}}" variant="primary">Go somewhere</b-button>
-
-    </b-card>
-  </b-row>
+  <article class="div m-2"
+           style="max-width: 20rem;"
+           :id="post.id"
+  >
+    <img :src="post.thumbnailUrl">
+    <router-link :to="{name:'post', params: {id:post.id}}"><h5>{{ post.title }}</h5></router-link>
+    <p>{{ post.body }}</p>
+    <b-button href="#" :to="{name:'post', params: {id:post.id}}"  variant="primary" class="btn-post-item" style="color: #fff">Открыть пост</b-button>
+  </article>
 </template>
 <script>
   export default {
-    computed: {
-      allPosts(){
-        return this.$store.getters.getPosts;
+    props: {
+      'post': {
+        type: Object,
+        required: true
       }
     },
-    mounted() {
-      this.$store.dispatch('loadPosts')
-    }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss" scoped>
   h3 {
     margin: 40px 0 0;
   }
@@ -52,5 +38,8 @@
   }
   .justify-center{
     justify-content: center;
+  }
+  img{
+    max-width: 100%;
   }
 </style>

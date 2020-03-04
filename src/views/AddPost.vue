@@ -1,89 +1,105 @@
 <template>
-  <div class="app-layout">
+  <div class="app-layout add-post">
     <b-container>
       <b-form @submit="onSubmit" @reset="onReset" v-if="show">
         <b-form-group
                 id="input-group-1"
-                label="Email address:"
+                label="Ссылка изображения поста:"
                 label-for="input-1"
-                description="We'll never share your email with anyone else."
+                description="Вставьте ссылку на изображение поста"
         >
           <b-form-input
                   id="input-1"
-                  v-model="form.email"
-                  type="email"
+                  v-model="post.thumbnailUrl"
+                  type="text"
                   required
-                  placeholder="Enter email"
+                  placeholder="https://img_url"
           ></b-form-input>
         </b-form-group>
-
-        <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
+        <b-form-group
+                id="input-group-2"
+                label="Название поста:"
+                label-for="input-2"
+                description="Введите название поста"
+        >
           <b-form-input
                   id="input-2"
-                  v-model="form.name"
+                  v-model="post.title"
+                  type="text"
                   required
-                  placeholder="Enter name"
+                  placeholder="Новый пост"
           ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-3" label="Food:" label-for="input-3">
-          <b-form-select
+        <b-form-group
+                id="input-group-3"
+                label="Описание поста"
+                label-for="input-3"
+                description="Введите описание поста"
+        >
+          <b-form-input
                   id="input-3"
-                  v-model="form.food"
-                  :options="foods"
+                  v-model="post.body"
                   required
-          ></b-form-select>
+                  placeholder="Новый пост о политике"
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-4">
-          <b-form-checkbox-group v-model="form.checked" id="checkboxes-4">
-            <b-form-checkbox value="me">Check me out</b-form-checkbox>
-            <b-form-checkbox value="that">Check that out</b-form-checkbox>
-          </b-form-checkbox-group>
-        </b-form-group>
-
-        <b-button type="submit" variant="primary">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
+        <b-button type="submit" variant="primary" style="margin: 10px;">Добавить</b-button>
+        <b-button type="reset" variant="danger" style="margin: 10px;">Сбросить</b-button>
       </b-form>
-      <b-card class="mt-3" header="Form Data Result">
-        <pre class="m-0">{{ form }}</pre>
-      </b-card>
+      <PostItem v-if="post.title" :post="post"></PostItem>
     </b-container>
   </div>
 </template>
 
 <script>
+  import PostItem from "../components/PostItem";
+
   export default {
     data() {
       return {
-        form: {
-          email: '',
-          name: '',
-          food: null,
-          checked: []
+        post: {
+          id: '',
+          thumbnailUrl: '',
+          title: '',
+          body: '',
         },
-        foods: [{ text: 'Select One', value: null }, 'Carrots', 'Beans', 'Tomatoes', 'Corn'],
         show: true
       }
     },
+    computed: {
+      newId() {
+        let date = new Date().toLocaleString('en',
+          {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric',
+          });
+        let postId = (this.$store.getters.GET_POSTS.length + 1) + '_' + date;
+        return postId;
+      },
+    },
     methods: {
       onSubmit(evt) {
-        evt.preventDefault()
-        alert(JSON.stringify(this.form))
+        evt.preventDefault();
+        this.post.id = this.newId;
+        this.$store.dispatch('ADD_POST', this.post);
+        this.$router.push('/posts');
       },
       onReset(evt) {
-        evt.preventDefault()
-        // Reset our form values
-        this.form.email = ''
-        this.form.name = ''
-        this.form.food = null
-        this.form.checked = []
-        // Trick to reset/clear native browser form validation state
-        this.show = false
+        evt.preventDefault();
+        this.post.thumbnailUrl = '';
+        this.post.title = '';
+        this.post.body = '';
+        this.show = false;
         this.$nextTick(() => {
           this.show = true
         })
       }
+    },
+    components: {
+      PostItem
     }
   }
 </script>
@@ -91,5 +107,17 @@
 <style lang="scss">
   .app-layout{
     padding: 5rem 0;
+  }
+  article.m-2{
+    margin: 0 auto!important;
+  }
+  img{
+    display: block;
+    margin: 0 auto;
+  }
+  .add-post{
+    .btn-post-item{
+      display: none;
+    }
   }
 </style>

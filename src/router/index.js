@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import Posts from '../views/Posts.vue'
+import Post from '../views/Post.vue'
 
 Vue.use(VueRouter);
 
@@ -13,23 +15,17 @@ const routes = [
   {
     path: '/posts',
     name: 'posts',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import('../views/Posts.vue')
+    component: Posts
   },
   {
     path: '/post/:id',
-    props: true,
     name: 'post',
-    component: () => import('../views/Post.vue')
+    component: Post,
+    props: true
   },
   {
     path: '/add-post',
     name: 'add-post',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import('../views/AddPost.vue')
   }
 ];
