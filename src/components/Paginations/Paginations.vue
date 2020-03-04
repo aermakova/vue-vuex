@@ -23,7 +23,7 @@
   export default {
     data() {
       return {
-        perPage: 10,
+        perPage: 4,
         currentPage: 1,
         items: [
           { id: 1, first_name: 'Fred', last_name: 'Flintstone' },

@@ -8,11 +8,26 @@
           <Search :filteredPosts="filteredPosts" v-if="this.searchPost.length > 3"></Search>
         </div>
       </div>
-      <b-row class="justify-center">
-        <div class="col-md-6 col-lg-3" v-for="post in allPosts" :key="'post' + post.id">
+      <b-row class="justify-center"
+             id="posts"
+             :per-page="perPage"
+             :current-page="currentPage"
+      >
+        <div class="col-md-6 col-lg-3"
+             v-for="post in allPostsCollections"
+             :key="'post' + post.id"
+        >
           <PostItem :post="post"></PostItem>
         </div>
       </b-row>
+      <b-pagination
+              v-model="currentPage"
+              :total-rows="totalRows"
+              :per-page="perPage"
+              aria-controls="posts"
+              @click="pageNumber(currentPage)"
+      ></b-pagination>
+
     </b-container>
   </div>
 </template>
@@ -25,7 +40,9 @@
     components: {PostItem, Search},
     data() {
       return {
-        searchPost: ''
+        searchPost: '',
+        perPage: 2,
+        currentPage: 1,
       }
     },
     mounted() {
@@ -34,8 +51,16 @@
       console.log(this.$store.state.posts);
     },
     computed: {
+      totalRows() {
+        return this.allPosts.length;
+      },
       allPosts() {
         return this.$store.getters.GET_POSTS;
+      },
+      allPostsCollections() {
+        let from = (this.currentPage -1) * this.perPage;
+        let to = from + this.perPage;
+        return this.allPosts.slice(from, to);
       },
       filteredPosts() {
         let posts = this.allPosts;
@@ -45,18 +70,28 @@
         return posts;
       },
     },
+    methods: {
+      pageNumber(currentPage) {
+        this.currentPage = currentPage;
+      }
+    }
   }
 
 </script>
 
-<style scoped>
+<style>
   .search-wrap{
     position: relative;
   }
   .col-md-6{
     margin-bottom: 20px;
   }
-  img{
+  article img{
     width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  p{
+    word-break: break-all;
   }
 </style>
