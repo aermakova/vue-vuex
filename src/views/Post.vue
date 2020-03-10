@@ -1,7 +1,7 @@
 <template>
   <div class="app-layout">
     <b-container v-if="post">
-      <div class="div" >
+      <div class="div" :id="post.id">
         <img :src="post.url || post.thumbnailUrl">
         <h1>{{ post.title }}</h1>
         <p>{{ post.body }}</p>
@@ -95,28 +95,26 @@
 
 <script>
   import { helpers, required, minLength } from 'vuelidate/lib/validators'
+  import axios from 'axios'
   const urlRegex = helpers.regex('urlRegex', /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/);
   export default {
     data() {
       return{
+        'post': null,
         'title': '',
         'body': '',
         'url': '',
       }
-    },
-    mounted() {
-      console.log(this.post.title);
     },
     props: {
       'id': {
         required: true
       }
     },
-    computed: {
-      post() {
-        const id = this.id;
-        return this.$store.getters.GET_POSTS_ID(id);
-      },
+    async created() {
+      let requestUrl = await axios.get(`https://jsonplaceholder.typicode.com/posts/${this.$route.params.id}` );
+      let requestImg = await axios.get(`https://jsonplaceholder.typicode.com/photos/${this.$route.params.id}` );
+      this.post = Object.assign({}, requestUrl.data, { url: requestImg.data.url });
     },
     methods: {
       status(validation) {
@@ -126,23 +124,21 @@
         }
       },
       onDelete() {
-        console.log('кнопка удалить' + this.post);
-        this.$store.commit('DELETE_POST', this.post);
+        axios
+          .delete(`https://jsonplaceholder.typicode.com/posts/${this.post.id}` );
         this.$router.push('/posts');
       },
       onEdit() {
-        this.$store.dispatch('UPDATE_POST', {
-          'id': this.id,
-          'title': this.title,
-          'body': this.body,
-          'url': this.url,
-          'thumbnailUrl': this.url,
-        });
+        axios
+          .put(`https://jsonplaceholder.typicode.com/posts/${this.post.id}`, {
+            'id': this.id,
+            'title': this.title,
+            'body': this.body,
+            'url': this.url,
+            'thumbnailUrl': this.url,
+          });
         this.$bvModal.hide('modal-edit');
       },
-      // onEdit() {
-      //   this.$store.dispatch('editPost', this.post);
-      // },
     },
     validations: {
       url: {

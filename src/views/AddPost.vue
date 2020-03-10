@@ -68,6 +68,7 @@
 <script>
   import PostItem from "../components/PostItem";
   import { helpers, required, minLength } from 'vuelidate/lib/validators'
+  import axios from 'axios'
   const urlRegex = helpers.regex('urlRegex', /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/);
 
   export default {
@@ -90,18 +91,6 @@
           });
         return (this.$store.getters.GET_POSTS.length + 1) + '_' + date;
       },
-      newPost() {
-        return {
-          'id': this.newId,
-          'title': this.title,
-          'body': this.body,
-          'url': this.url,
-          'thumbnailUrl': this.newThumbnailUrl,
-        };
-      },
-      newThumbnailUrl() {
-        return this.url;
-      }
     },
     methods: {
       status(validation) {
@@ -112,7 +101,19 @@
       },
       onSubmit(evt) {
         evt.preventDefault();
-        this.$store.dispatch('ADD_POST', this.newPost);
+        axios
+          .post('https://jsonplaceholder.typicode.com/posts', {
+            body: JSON.stringify({
+              'id': this.newId,
+              'title': this.title,
+              'body': this.body,
+              'url': this.url,
+              'thumbnailUrl': this.url,
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8"
+            }
+          });
         this.$router.push('/posts');
       },
       onReset(evt) {

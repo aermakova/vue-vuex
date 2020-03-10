@@ -13,7 +13,7 @@
              :per-page="perPage"
              :current-page="currentPage"
       >
-        <div class="col-md-6 col-lg-3"
+        <div class="col-md-6 col-lg-4"
              v-for="post in allPostsCollections"
              :key="'post' + post.id"
         >
@@ -36,19 +36,16 @@
 
   import PostItem from "../components/PostItem";
   import Search from "../components/Search";
+  import { mapActions } from 'vuex'
   export default {
     components: {PostItem, Search},
     data() {
       return {
         searchPost: '',
-        perPage: 2,
+        perPage: 10,
         currentPage: 1,
+        postCount: 40
       }
-    },
-    mounted() {
-      // this.$store.dispatch('loadPosts', this.postCount);
-      // this.$store.dispatch('loadPostsImg', this.postCount)
-      console.log(this.$store.state.posts);
     },
     computed: {
       totalRows() {
@@ -71,6 +68,14 @@
       },
     },
     methods: {
+      ...mapActions([
+        'LOAD_POSTS',
+        'this.postCount'
+      ]),
+      ...mapActions([
+        'LOAD_POSTS_IMG',
+        'this.postCount'
+      ]),
       pageNumber(currentPage) {
         this.currentPage = currentPage;
       }

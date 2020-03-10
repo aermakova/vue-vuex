@@ -1,5 +1,7 @@
 <template>
   <div class="search">
+    <div class="text-left">найдено <b>{{ filteredPosts.length }}</b> результатов
+    </div>
     <table striped hover>
       <tr v-for="filteredPost in filteredPosts" :key="'post' + filteredPost.id">
         <td class="text-left"><img :src="filteredPost.thumbnailUrl" style="width: 50px"></td>
